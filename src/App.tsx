@@ -354,84 +354,114 @@ GENERATE JSON.`;
       )}
 
       <main className="flex-1 max-w-[1800px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6 md:h-[calc(100vh-70px)] h-auto">
-        {/* Narrow Icon-Only Sidebar */}
-        <div className="w-16 shrink-0 flex flex-col gap-2 items-center pt-2">
+        {/* Full-Width Sidebar with Icons + Labels */}
+        <div className="w-56 shrink-0 flex flex-col gap-1.5 pt-2">
           {tabs.map(tab => (
-            <div key={tab.id} className="tooltip-container w-full">
-              <button
-                onClick={() => switchTab(tab.id)}
-                className="w-full p-3 rounded-xl border transition-all duration-300 flex flex-col items-center gap-1"
+            <button
+              key={tab.id}
+              onClick={() => switchTab(tab.id)}
+              className="group w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-300"
+              style={{
+                background: store.activeTab === tab.id ? 'rgba(212,175,55,0.08)' : 'transparent',
+                borderColor: store.activeTab === tab.id ? 'rgba(212,175,55,0.25)' : 'rgba(212,175,55,0.06)',
+                boxShadow: store.activeTab === tab.id ? '0 0 20px rgba(212,175,55,0.06)' : 'none',
+                color: store.activeTab === tab.id ? '#D4AF37' : 'rgba(232,224,208,0.45)',
+              }}
+              onMouseOver={e => {
+                if (store.activeTab !== tab.id) {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(212,175,55,0.04)';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#D4AF37';
+                }
+              }}
+              onMouseOut={e => {
+                if (store.activeTab !== tab.id) {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'rgba(232,224,208,0.45)';
+                }
+              }}
+            >
+              <i
+                className={`fa-solid ${tab.icon} text-base`}
                 style={{
-                  background: store.activeTab === tab.id ? 'rgba(212,175,55,0.1)' : 'transparent',
-                  borderColor: store.activeTab === tab.id ? 'rgba(212,175,55,0.35)' : 'rgba(212,175,55,0.06)',
-                  boxShadow: store.activeTab === tab.id ? '0 0 15px rgba(212,175,55,0.1)' : 'none',
-                  color: store.activeTab === tab.id ? '#D4AF37' : 'rgba(232,224,208,0.35)',
+                  fontSize: '16px',
+                  width: '20px',
+                  textAlign: 'center',
+                  filter: store.activeTab === tab.id ? 'drop-shadow(0 0 5px rgba(212,175,55,0.6))' : 'none',
                 }}
-              >
-                <i
-                  className={`fa-solid ${tab.icon}`}
-                  style={{
-                    fontSize: '18px',
-                    filter: store.activeTab === tab.id ? 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' : 'none',
-                    transition: 'all 0.3s ease',
-                  }}
-                />
+              />
+              <div className="flex flex-col items-start">
                 <span
+                  className="text-[11px] font-bold leading-tight"
                   style={{
-                    fontSize: '7px',
-                    fontFamily: "'Cinzel', serif",
-                    fontWeight: 600,
-                    letterSpacing: '0.08em',
-                    writingMode: 'horizontal-tb',
-                    textAlign: 'center',
-                    lineHeight: 1.2,
-                    color: store.activeTab === tab.id ? '#D4AF37' : 'rgba(232,224,208,0.35)',
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    color: store.activeTab === tab.id ? '#D4AF37' : 'rgba(232,224,208,0.45)',
                   }}
                 >
                   {tab.label}
                 </span>
-              </button>
-              <div className="tooltip-text">
-                <div style={{ fontWeight: 700, marginBottom: '2px', color: '#D4AF37' }}>{tab.label}</div>
-                <div style={{ fontWeight: 400, opacity: 0.7, fontSize: '10px' }}>{tab.desc}</div>
+                <span
+                  className="text-[9px] leading-tight mt-0.5"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    color: store.activeTab === tab.id ? 'rgba(212,175,55,0.5)' : 'rgba(232,224,208,0.2)',
+                    maxWidth: '130px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {tab.desc}
+                </span>
               </div>
-            </div>
+              {store.activeTab === tab.id && (
+                <div className="ml-auto w-1 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #D4AF37, #CD7F32)' }} />
+              )}
+            </button>
           ))}
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 content-area p-6 md:overflow-y-auto relative min-h-[500px]">
+        <div className="flex-1 content-area p-6 md:overflow-y-auto relative min-h-[500px] flex flex-col items-center">
           {/* SPY TAB */}
           {store.activeTab === 'spy' && (
-            <div className="max-w-5xl mx-auto space-y-6 animate-slide-in-bottom relative z-10">
-              <div className="glass-card p-6">
-                <h2 className="text-xl font-bold mb-5 flex items-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
-                  <i className="fa-brands fa-youtube" style={{ color: '#CD7F32' }}></i>
-                  Phân Tích Viral Historical Content
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <input
-                      value={ytUrl}
-                      onChange={e => setYtUrl(e.target.value)}
-                      placeholder="Dán link Video Lịch Sử / Documentary / Historical Drama..."
-                      className="flex-1 glass-input p-3 text-sm"
-                    />
-                    <button
-                      onClick={() => { setYtUrl(''); setSpyResults(null); setSpyMeta(null); }}
-                      className="p-3 rounded-xl transition-all"
-                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.1)', color: 'rgba(232,224,208,0.4)' }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
+            <div className="w-full max-w-4xl mx-auto animate-slide-in-bottom relative z-10">
+              <div className="glass-card p-8">
+                {/* Hero title */}
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold mb-3 flex items-center justify-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
+                    <i className="fa-brands fa-youtube" style={{ color: '#D4AF37', fontSize: '24px' }}></i>
+                    Phân Tích Viral Historical Content
+                  </h2>
+                  <p className="text-sm" style={{ color: 'rgba(232,224,208,0.4)' }}>
+                    Dán link video để AI phân tích chiến lược viral, revenue và engagement
+                  </p>
+                </div>
+
+                {/* Input + Button on same row */}
+                <div className="flex gap-3 items-center">
+                  <input
+                    value={ytUrl}
+                    onChange={e => setYtUrl(e.target.value)}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    className="flex-1 glass-input p-3.5 text-sm"
+                    style={{ height: '48px' }}
+                  />
+                  <button
+                    onClick={() => { setYtUrl(''); setSpyResults(null); setSpyMeta(null); }}
+                    className="p-3.5 rounded-xl transition-all shrink-0"
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.1)', color: 'rgba(232,224,208,0.4)', height: '48px', width: '48px' }}
+                  >
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
                   <button
                     onClick={handleSpy}
                     disabled={spyLoading}
-                    className="w-full py-4 btn-gold flex items-center justify-center gap-2 text-base"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    className="btn-gold px-8 flex items-center justify-center gap-2 shrink-0"
+                    style={{ fontFamily: "'Cinzel', serif", height: '48px', fontSize: '13px', fontWeight: 700, letterSpacing: '0.06em' }}
                   >
-                    {spyLoading ? <><i className="fa-solid fa-sync fa-spin"></i> ĐANG QUÉT...</> : <><i className="fa-solid fa-brain" style={{ fontSize: '18px' }}></i> PHÂN TÍCH CHIỀU SÂU LỊCH SỬ</>}
+                    {spyLoading ? <><i className="fa-solid fa-sync fa-spin"></i> ĐANG...</> : <><i className="fa-solid fa-brain"></i> PHÂN TÍCH</>}
                   </button>
                 </div>
               </div>
@@ -447,12 +477,17 @@ GENERATE JSON.`;
 
           {/* SCRIPT TAB */}
           {store.activeTab === 'script' && (
-            <div className="max-w-5xl mx-auto space-y-6 animate-slide-in-right relative z-10">
-              <div className="glass-card p-6">
-                <h2 className="text-xl font-bold mb-5 flex items-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
-                  <i className="fa-solid fa-pen-fancy" style={{ color: '#D4AF37' }}></i>
-                  Quy Trình Sáng Tạo Kịch Bản Lịch Sử
-                </h2>
+            <div className="w-full max-w-4xl mx-auto space-y-6 animate-slide-in-right relative z-10">
+              <div className="glass-card p-8">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold mb-2 flex items-center justify-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
+                    <i className="fa-solid fa-pen-fancy" style={{ color: '#D4AF37', fontSize: '24px' }}></i>
+                    Quy Trình Sáng Tạo Kịch Bản Lịch Sử
+                  </h2>
+                  <p className="text-sm" style={{ color: 'rgba(232,224,208,0.4)' }}>
+                    Tạo kịch bản đa văn hóa với voice + visual prompts theo phong cách của bạn
+                  </p>
+                </div>
                 <div className="space-y-5">
                   <div>
                     <div className="text-[10px] font-bold mb-2 uppercase tracking-widest" style={{ color: '#A8862A', fontFamily: "'Cinzel', serif" }}>CHỦ ĐỀ LỊCH SỬ</div>
@@ -460,6 +495,7 @@ GENERATE JSON.`;
                       value={scriptTopic}
                       onChange={e => setScriptTopic(e.target.value)}
                       className="w-full glass-input p-3 text-sm"
+                      style={{ height: '48px' }}
                       placeholder="VD: Chiến tranh Việt Nam, Đế chế La Mã, Cách mạng Công nghiệp..."
                     />
                   </div>
@@ -571,10 +607,10 @@ GENERATE JSON.`;
                   <button
                     onClick={handleGenerateScript}
                     disabled={scriptLoading}
-                    className="w-full py-4 btn-gold text-base flex items-center justify-center gap-3"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    className="btn-gold w-full py-3.5 flex items-center justify-center gap-3 text-sm"
+                    style={{ fontFamily: "'Cinzel', serif", fontSize: '13px', fontWeight: 700, letterSpacing: '0.06em' }}
                   >
-                    {scriptLoading ? <><i className="fa-solid fa-sync fa-spin"></i> ĐANG VIẾT...</> : <><i className="fa-solid fa-scroll" style={{ fontSize: '18px' }}></i> TẠO KỊCH BẢN LỊCH SỬ ĐA VĂN HÓA</>}
+                    {scriptLoading ? <><i className="fa-solid fa-sync fa-spin"></i> ĐANG VIẾT...</> : <><i className="fa-solid fa-scroll"></i> TẠO KỊCH BẢN LỊCH SỬ ĐA VĂN HÓA</>}
                   </button>
                 </div>
               </div>
