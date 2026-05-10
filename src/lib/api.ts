@@ -4,55 +4,22 @@ import { safeJSONParse } from './utils';
 export async function callAI(
   prompt: string,
   systemPrompt: string,
-  store: {
-    keyPool: string[];
-    currentKeyIndex: number;
-    apiEnabled: { google: boolean; openrouter: boolean; openai: boolean; youtube: boolean };
-    openRouterKey: string;
-    openRouterModel: string;
-    openAiKey: string;
-    openAiModel: string;
-  },
+  keyPool: string[],
+  _currentKeyIndex: number,
   onRotate: () => string,
   onError: (msg: string) => void
 ): Promise<unknown> {
-  const anyEnabled = store.apiEnabled.google || store.apiEnabled.openrouter || store.apiEnabled.openai;
-  if (!anyEnabled) {
-    throw new Error("❌ Vui lòng bật ít nhất 1 API trong Config!");
+  const hasKeys = keyPool.some(k => k && k.trim() !== '');
+  if (!hasKeys) {
+    throw new Error("❌ Vui lòng nhập API Key trong Settings!");
   }
 
-  const hasGoogleKeys = store.keyPool.some(k => k && k.trim() !== '');
-  if (store.apiEnabled.google && hasGoogleKeys) {
-    try {
-      return await callGoogleWithRetry(prompt, systemPrompt, store, onRotate, onError);
-    } catch (e) {
-      console.warn("Google Gemini Failed:", e);
-      if (!store.apiEnabled.openrouter && !store.apiEnabled.openai) throw e;
-      onError("⚠️ Google API failed. Switching to backup...");
-    }
-  }
-
-  if (store.apiEnabled.openrouter && store.openRouterKey) {
-    try {
-      return await callOpenRouter(prompt, systemPrompt, store.openRouterKey, store.openRouterModel);
-    } catch (e) {
-      console.warn("OpenRouter Failed:", e);
-      if (!store.apiEnabled.openai) throw e;
-      onError("⚠️ OpenRouter failed. Trying OpenAI...");
-    }
-  }
-
-  if (store.apiEnabled.openai && store.openAiKey) {
-    return await callOpenAI(prompt, systemPrompt, store.openAiKey, store.openAiModel);
-  }
-
-  throw new Error("❌ All enabled APIs failed or no valid API keys!");
+  return await callGoogleWithRetry(prompt, systemPrompt, onRotate, onError);
 }
 
 async function callGoogleWithRetry(
   prompt: string,
   systemPrompt: string,
-  _store: { keyPool: string[]; currentKeyIndex: number },
   onRotate: () => string,
   onError: (msg: string) => void,
   retries = 6
@@ -91,57 +58,6 @@ async function callGoogleWithRetry(
     }
   }
   throw lastError || new Error("All Google attempts failed.");
-}
-
-async function callOpenRouter(prompt: string, systemPrompt: string, apiKey: string, model: string) {
-  const url = "https://openrouter.ai/api/v1/chat/completions";
-  const body = {
-    model: model || MODELS.openrouter_default,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: prompt }
-    ],
-    response_format: { type: "json_object" }
-  };
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'NDGroup HistoryMaster' },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`OpenRouter Error: ${err}`);
-  }
-  const data = await res.json();
-  return safeJSONParse(data.choices[0].message.content);
-}
-
-async function callOpenAI(prompt: string, systemPrompt: string, apiKey: string, model: string) {
-  const url = "https://api.openai.com/v1/chat/completions";
-  const body = {
-    model: model || 'gpt-4-turbo-preview',
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: prompt }
-    ],
-    response_format: { type: "json_object" },
-    temperature: 0.7
-  };
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`OpenAI Error: ${err}`);
-  }
-  const data = await res.json();
-  return safeJSONParse(data.choices[0].message.content);
 }
 
 export function getNextKey(keyPool: string[], currentIndex: number): { key: string; nextIndex: number } {

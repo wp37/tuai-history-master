@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { StoreState, ScriptSegment } from './data/types';
-import { SECONDS_PER_SCENE, MODELS } from './data/types';
+import { SECONDS_PER_SCENE } from './data/types';
 import { HISTORY_CONTEXTS, countryList } from './data/countries';
 import { VISUAL_STYLES } from './data/visualStyles';
 import { SYSTEM_PROMPT_IQ180_HISTORY_ANALYST, SYSTEM_PROMPT_HISTORICAL_SCRIPTWRITER, SYSTEM_PROMPT_SEO_MASTER, SYSTEM_PROMPT_MARKET_ANALYST } from './data/prompts';
@@ -34,30 +34,15 @@ const initialStore: StoreState = {
   uiLanguage: 'vi',
   renderingId: null,
   isLoading: false,
-  openRouterKey: '',
-  openRouterModel: MODELS.openrouter_default,
   youtubeApiKey: '',
-  openAiKey: '',
-  openAiModel: 'gpt-4-turbo-preview',
-  apiEnabled: { google: true, openrouter: false, openai: false, youtube: false }
 };
 
 function loadStore(): StoreState {
   try {
     const saved = localStorage.getItem('hm_key_pool');
     if (saved) initialStore.keyPool = JSON.parse(saved);
-    const savedOr = localStorage.getItem('hm_openrouter_key');
-    if (savedOr) initialStore.openRouterKey = savedOr;
-    const savedOrM = localStorage.getItem('hm_openrouter_model');
-    if (savedOrM) initialStore.openRouterModel = savedOrM;
     const savedYT = localStorage.getItem('hm_youtube_key');
     if (savedYT) initialStore.youtubeApiKey = savedYT;
-    const savedOA = localStorage.getItem('hm_openai_key');
-    if (savedOA) initialStore.openAiKey = savedOA;
-    const savedOAM = localStorage.getItem('hm_openai_model');
-    if (savedOAM) initialStore.openAiModel = savedOAM;
-    const savedApiEnabled = localStorage.getItem('hm_api_enabled');
-    if (savedApiEnabled) initialStore.apiEnabled = JSON.parse(savedApiEnabled);
     const savedLang = localStorage.getItem('hm_ui_language');
     if (savedLang === 'vi' || savedLang === 'en') initialStore.uiLanguage = savedLang;
     const savedActLang = localStorage.getItem('hm_active_language');
@@ -66,14 +51,9 @@ function loadStore(): StoreState {
   return { ...initialStore };
 }
 
-function saveStoreKeyPool(store: StoreState) {
+function saveStore(store: StoreState) {
   localStorage.setItem('hm_key_pool', JSON.stringify(store.keyPool));
-  localStorage.setItem('hm_openrouter_key', store.openRouterKey);
-  localStorage.setItem('hm_openrouter_model', store.openRouterModel);
   localStorage.setItem('hm_youtube_key', store.youtubeApiKey);
-  localStorage.setItem('hm_openai_key', store.openAiKey);
-  localStorage.setItem('hm_openai_model', store.openAiModel);
-  localStorage.setItem('hm_api_enabled', JSON.stringify(store.apiEnabled));
   localStorage.setItem('hm_ui_language', store.uiLanguage);
   localStorage.setItem('hm_active_language', store.activeLanguage);
 }
@@ -122,20 +102,9 @@ export default function App() {
   }, [store.keyPool, store.currentKeyIndex]);
 
   const updateKeyPool = (keys: string[]) => {
-    setStore(s => { const ns = { ...s, keyPool: keys }; saveStoreKeyPool(ns); return ns; });
+    setStore(s => { const ns = { ...s, keyPool: keys }; saveStore(ns); return ns; });
   };
-  const updateApiEnabled = (enabled: typeof store.apiEnabled) => {
-    setStore(s => { const ns = { ...s, apiEnabled: enabled }; saveStoreKeyPool(ns); return ns; });
-  };
-  const updateOpenRouter = (key: string, model: string) => {
-    setStore(s => { const ns = { ...s, openRouterKey: key, openRouterModel: model }; saveStoreKeyPool(ns); return ns; });
-  };
-  const updateYoutubeKey = (key: string) => {
-    setStore(s => { const ns = { ...s, youtubeApiKey: key }; saveStoreKeyPool(ns); return ns; });
-  };
-  const updateOpenAi = (key: string, model: string) => {
-    setStore(s => { const ns = { ...s, openAiKey: key, openAiModel: model }; saveStoreKeyPool(ns); return ns; });
-  };
+
   const switchTab = (tab: StoreState['activeTab']) => {
     setStore(s => ({ ...s, activeTab: tab }));
   };
@@ -154,7 +123,7 @@ export default function App() {
         prompt += `\nNOTE: Use the Description and Tags to dive deeper into the content topic.`;
       }
       prompt += `\nANALYZE HISTORY & EDUCATIONAL CONTENT based on this metadata.`;
-      const data = await callAI(prompt, SYSTEM_PROMPT_IQ180_HISTORY_ANALYST, store, handleRotateKey, showError);
+      const data = await callAI(prompt, SYSTEM_PROMPT_IQ180_HISTORY_ANALYST, store.keyPool, store.currentKeyIndex, handleRotateKey, showError);
       setSpyResults(data);
     } catch (e: unknown) {
       showError((e as Error).message);
@@ -181,7 +150,7 @@ export default function App() {
       const styleRefText = styleRef || (styleObj ? styleObj.reference_prompt : "");
       const context = HISTORY_CONTEXTS[store.activeLanguage] || HISTORY_CONTEXTS['vn_aspiration'];
       const prompt = `TOPIC: "${scriptTopic}"\nDURATION: ${duration}m\nSCENE_COUNT: ${requiredScenes}\nTARGET_LANGUAGE: ${context.voice_lang}\nTARGET_MARKET: ${context.name}\nVISUAL_STYLE: ${styleName}\nTHEME: HISTORY\nCULTURE: ${context.culture}\nCORE_DRIVER: ${context.core_driver}\nWRITING_STYLE: ${context.writing_style}\nHUMAN_ELEMENT: ${context.human_element}\nSTYLE_REFERENCE_FRAMEWORK: ${styleRefText}\nGENERATE JSON OBJECT.`;
-      const json = await callAI(prompt, SYSTEM_PROMPT_HISTORICAL_SCRIPTWRITER, store, handleRotateKey, showError);
+      const json = await callAI(prompt, SYSTEM_PROMPT_HISTORICAL_SCRIPTWRITER, store.keyPool, store.currentKeyIndex, handleRotateKey, showError);
       let segments: ScriptSegment[] = (json as { script?: ScriptSegment[] }).script || [];
       if (styleObj && styleObj.id !== 'auto' && styleRefText) {
         const cleaned: ScriptSegment[] = segments.map((seg: ScriptSegment) => ({
@@ -207,7 +176,7 @@ export default function App() {
     try {
       const context = HISTORY_CONTEXTS[store.activeLanguage] || HISTORY_CONTEXTS['vn_aspiration'];
       const prompt = `TOPIC: "${seoTopic}"\nTARGET_LANGUAGE: ${context.voice_lang}\nTARGET_MARKET: ${context.name}\nTHEME: HISTORY\nGENERATE JSON.`;
-      const data = await callAI(prompt, SYSTEM_PROMPT_SEO_MASTER, store, handleRotateKey, showError);
+      const data = await callAI(prompt, SYSTEM_PROMPT_SEO_MASTER, store.keyPool, store.currentKeyIndex, handleRotateKey, showError);
       setSeoResults(data);
     } catch (e: unknown) {
       showError((e as Error).message);
@@ -222,7 +191,7 @@ export default function App() {
     setMarketLoading(true);
     try {
       const prompt = `TOPIC: "${marketTopic}"\nGENERATE JSON.`;
-      const data = await callAI(prompt, SYSTEM_PROMPT_MARKET_ANALYST, store, handleRotateKey, showError);
+      const data = await callAI(prompt, SYSTEM_PROMPT_MARKET_ANALYST, store.keyPool, store.currentKeyIndex, handleRotateKey, showError);
       setMarketResults(data);
     } catch (e: unknown) {
       showError((e as Error).message);
@@ -302,7 +271,7 @@ export default function App() {
         uiLanguage={store.uiLanguage}
         onToggleLang={() => {
           const lang: 'vi' | 'en' = store.uiLanguage === 'vi' ? 'en' : 'vi';
-          setStore(s => { const ns = { ...s, uiLanguage: lang }; saveStoreKeyPool(ns); return ns; });
+          setStore(s => { const ns = { ...s, uiLanguage: lang }; saveStore(ns); return ns; });
         }}
         onOpenSettings={() => setShowSettings(true)}
       />
@@ -526,7 +495,7 @@ export default function App() {
                     Thị Trường Mục Tiêu
                   </div>
                   <select value={store.activeLanguage}
-                    onChange={e => { setLanguageSelect(e.target.value); setStore(s => { const ns = { ...s, activeLanguage: e.target.value }; saveStoreKeyPool(ns); return ns; }); }}
+                    onChange={e => { setLanguageSelect(e.target.value); setStore(s => { const ns = { ...s, activeLanguage: e.target.value }; saveStore(ns); return ns; }); }}
                     className="w-full glass-select p-4 text-sm">
                     {countryList.map(c => (
                       <option key={c.id} value={c.id}>{c.flag} {c.name}</option>
@@ -702,13 +671,9 @@ export default function App() {
 
       {showSettings && (
         <SettingsModal
-          store={store}
+          keyPool={store.keyPool}
+          onSave={updateKeyPool}
           onClose={() => setShowSettings(false)}
-          onUpdateKeyPool={updateKeyPool}
-          onUpdateApiEnabled={updateApiEnabled}
-          onUpdateOpenRouter={updateOpenRouter}
-          onUpdateYoutubeKey={updateYoutubeKey}
-          onUpdateOpenAi={updateOpenAi}
         />
       )}
     </div>

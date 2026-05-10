@@ -1,35 +1,13 @@
 import { useState } from 'react';
-import type { StoreState } from '../data/types';
 
 interface Props {
-  store: StoreState;
+  keyPool: string[];
+  onSave: (keys: string[]) => void;
   onClose: () => void;
-  onUpdateKeyPool: (keys: string[]) => void;
-  onUpdateApiEnabled: (enabled: StoreState['apiEnabled']) => void;
-  onUpdateOpenRouter: (key: string, model: string) => void;
-  onUpdateYoutubeKey: (key: string) => void;
-  onUpdateOpenAi: (key: string, model: string) => void;
 }
 
-export default function SettingsModal({ store, onClose, onUpdateKeyPool, onUpdateApiEnabled, onUpdateOpenRouter, onUpdateYoutubeKey, onUpdateOpenAi }: Props) {
-  const [keys, setKeys] = useState<string[]>(store.keyPool.length > 0 ? store.keyPool : ['']);
-  const [orKey, setOrKey] = useState(store.openRouterKey);
-  const [orModel, setOrModel] = useState(store.openRouterModel);
-  const [ytKey, setYtKey] = useState(store.youtubeApiKey);
-  const [oaKey, setOaKey] = useState(store.openAiKey);
-  const [oaModel, setOaModel] = useState(store.openAiModel);
-
-  const toggleApi = (name: keyof StoreState['apiEnabled']) => {
-    onUpdateApiEnabled({ ...store.apiEnabled, [name]: !store.apiEnabled[name] });
-  };
-
-  const saveKeys = () => {
-    onUpdateKeyPool(keys.filter(k => k.trim() !== ''));
-    onUpdateOpenRouter(orKey, orModel);
-    onUpdateYoutubeKey(ytKey);
-    onUpdateOpenAi(oaKey, oaModel);
-    onClose();
-  };
+export default function SettingsModal({ keyPool, onSave, onClose }: Props) {
+  const [keys, setKeys] = useState<string[]>(keyPool.length > 0 ? keyPool : ['']);
 
   const addKey = () => setKeys([...keys, '']);
   const removeKey = (i: number) => {
@@ -42,19 +20,21 @@ export default function SettingsModal({ store, onClose, onUpdateKeyPool, onUpdat
     setKeys(next);
   };
 
-  const toggleBg = (enabled: boolean) => ({
-    background: enabled ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)',
-    borderColor: enabled ? 'rgba(212,175,55,0.3)' : 'rgba(212,175,55,0.08)',
-  });
+  const handleSave = () => {
+    onSave(keys.filter(k => k.trim() !== ''));
+    onClose();
+  };
+
+  const validCount = keys.filter(k => k.trim().startsWith('AIza')).length;
 
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in"
       style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(8px)' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget && validCount > 0) onClose(); }}
     >
       <div
-        className="w-full max-w-lg rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md rounded-2xl overflow-hidden"
         style={{
           background: 'rgba(10, 14, 23, 0.97)',
           border: '1px solid rgba(212, 175, 55, 0.15)',
@@ -62,43 +42,77 @@ export default function SettingsModal({ store, onClose, onUpdateKeyPool, onUpdat
         }}
       >
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="font-bold flex items-center gap-3 text-lg" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
-            <i className="fa-solid fa-gear" style={{ color: '#D4AF37' }}></i>
-            Cấu Hình API
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl transition-all"
-            style={{ color: 'rgba(232,224,208,0.4)', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.1)' }}
-            onMouseOver={e => (e.currentTarget.style.color = '#D4AF37')}
-            onMouseOut={e => (e.currentTarget.style.color = 'rgba(232,224,208,0.4)')}
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
+        <div className="p-6 flex justify-between items-center" style={{ borderBottom: '1px solid rgba(212,175,55,0.1)' }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.2), rgba(205,127,50,0.1))', border: '1px solid rgba(212,175,55,0.3)' }}>
+              <i className="fa-solid fa-key" style={{ color: '#D4AF37', fontSize: '16px' }}></i>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
+                Gemini API Key
+              </h3>
+              <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.5)' }}>Nhập key để sử dụng AI</p>
+            </div>
+          </div>
+          {validCount > 0 && (
+            <button onClick={onClose} className="p-2 rounded-xl transition-all"
+              style={{ color: 'rgba(232,224,208,0.4)', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.1)' }}>
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          )}
         </div>
 
-        {/* Google Gemini */}
-        <div className="rounded-xl p-4 mb-4 transition-all" style={toggleBg(store.apiEnabled.google)}>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <i className="fa-brands fa-google" style={{ color: '#D4AF37', fontSize: '14px' }}></i>
-              <div className="text-xs font-bold uppercase" style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif", letterSpacing: '0.05em' }}>Google Gemini (Priority 1)</div>
-              <div
-                className="px-2 py-0.5 rounded-full text-[9px] font-bold"
-                style={{
-                  background: store.apiEnabled.google ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.05)',
-                  color: store.apiEnabled.google ? '#D4AF37' : 'rgba(232,224,208,0.3)',
-                  border: `1px solid ${store.apiEnabled.google ? 'rgba(212,175,55,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                }}
-              >
-                {store.apiEnabled.google ? 'ON' : 'OFF'}
-              </div>
+        {/* Guide */}
+        <div className="px-6 pt-5">
+          <div className="rounded-xl p-4 mb-4"
+            style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.12)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <i className="fa-solid fa-circle-info" style={{ color: '#D4AF37', fontSize: '14px' }}></i>
+              <span className="text-xs font-bold uppercase" style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif", letterSpacing: '0.08em' }}>
+                Hướng dẫn lấy API Key (Miễn phí)
+              </span>
             </div>
-            <label className="toggle-gold">
-              <input type="checkbox" checked={store.apiEnabled.google} onChange={() => toggleApi('google')} />
-              <span className="toggle-gold-slider"></span>
-            </label>
+            <ol className="space-y-2" style={{ fontSize: '12px', color: 'rgba(232,224,208,0.6)' }}>
+              <li className="flex items-start gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                  style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' }}>1</span>
+                <span>Vào <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer"
+                  style={{ color: '#D4AF37', textDecoration: 'underline' }}>aistudio.google.com/app/apikey</a></span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                  style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' }}>2</span>
+                <span>Đăng nhập Google → Bấm <strong style={{ color: '#D4AF37' }}>Create API Key</strong></span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                  style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' }}>3</span>
+                <span>Copy key (bắt đầu bằng <code style={{ color: '#CD7F32', fontSize: '11px' }}>AIza...</code>) và dán vào ô bên dưới</span>
+              </li>
+            </ol>
+            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(212,175,55,0.08)' }}>
+              <p style={{ fontSize: '10px', color: 'rgba(212,175,55,0.4)', fontStyle: 'italic' }}>
+                <i className="fa-solid fa-lightbulb" style={{ marginRight: '4px' }}></i>
+                Mẹo: Thêm nhiều key (từ nhiều Gmail) để tránh hết quota. Hệ thống tự động xoay key khi bị giới hạn.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Key Inputs */}
+        <div className="px-6 pb-2">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold uppercase" style={{ color: 'rgba(232,224,208,0.5)', fontFamily: "'Cinzel', serif", letterSpacing: '0.08em' }}>
+              <i className="fa-brands fa-google" style={{ color: '#D4AF37', marginRight: '6px' }}></i>
+              Google Gemini API Keys
+            </span>
+            {validCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold"
+                style={{ background: 'rgba(74,222,128,0.15)', color: '#4ADE80', border: '1px solid rgba(74,222,128,0.3)' }}>
+                {validCount} key hoạt động
+              </span>
+            )}
           </div>
           <div className="space-y-2">
             {keys.map((k, i) => (
@@ -107,15 +121,13 @@ export default function SettingsModal({ store, onClose, onUpdateKeyPool, onUpdat
                   type="password"
                   value={k}
                   onChange={e => updateKey(i, e.target.value)}
-                  className="flex-1 glass-input p-2.5 text-xs font-mono"
-                  placeholder="AIza..."
+                  className="flex-1 glass-input p-3 text-xs font-mono"
+                  placeholder="AIzaSy..."
                 />
                 <button
                   onClick={() => removeKey(i)}
-                  className="p-2.5 rounded-xl transition-all"
+                  className="p-3 rounded-xl transition-all shrink-0"
                   style={{ color: 'rgba(232,224,208,0.4)', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.08)' }}
-                  onMouseOver={e => (e.currentTarget.style.color = '#CD7F32')}
-                  onMouseOut={e => (e.currentTarget.style.color = 'rgba(232,224,208,0.4)')}
                 >
                   <i className="fa-solid fa-trash"></i>
                 </button>
@@ -125,136 +137,38 @@ export default function SettingsModal({ store, onClose, onUpdateKeyPool, onUpdat
               onClick={addKey}
               className="text-xs flex items-center gap-1 mt-1 transition-colors"
               style={{ color: 'rgba(212,175,55,0.5)' }}
-              onMouseOver={e => (e.currentTarget.style.color = '#D4AF37')}
-              onMouseOut={e => (e.currentTarget.style.color = 'rgba(212,175,55,0.5)')}
             >
-              <i className="fa-solid fa-plus"></i> Thêm Key
+              <i className="fa-solid fa-plus"></i> Thêm Key (Gmail khác)
             </button>
           </div>
         </div>
 
-        {/* OpenRouter */}
-        <div className="rounded-xl p-4 mb-4 transition-all" style={toggleBg(store.apiEnabled.openrouter)}>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-route" style={{ color: '#CD7F32', fontSize: '14px' }}></i>
-              <div className="text-xs font-bold uppercase" style={{ color: '#CD7F32', fontFamily: "'Cinzel', serif", letterSpacing: '0.05em' }}>OpenRouter (Backup)</div>
-              <div
-                className="px-2 py-0.5 rounded-full text-[9px] font-bold"
-                style={{
-                  background: store.apiEnabled.openrouter ? 'rgba(205,127,50,0.2)' : 'rgba(255,255,255,0.05)',
-                  color: store.apiEnabled.openrouter ? '#CD7F32' : 'rgba(232,224,208,0.3)',
-                  border: `1px solid ${store.apiEnabled.openrouter ? 'rgba(205,127,50,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                }}
-              >
-                {store.apiEnabled.openrouter ? 'ON' : 'OFF'}
-              </div>
-            </div>
-            <label className="toggle-gold">
-              <input type="checkbox" checked={store.apiEnabled.openrouter} onChange={() => toggleApi('openrouter')} />
-              <span className="toggle-gold-slider"></span>
-            </label>
+        {/* Warning if no valid key */}
+        {validCount === 0 && (
+          <div className="mx-6 mt-3 p-3 rounded-xl flex items-center gap-2"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <i className="fa-solid fa-triangle-exclamation" style={{ color: '#EF4444', fontSize: '13px' }}></i>
+            <span style={{ fontSize: '11px', color: '#F87171' }}>
+              Bạn cần ít nhất 1 API Key để sử dụng app. Key bắt đầu bằng "AIza..."
+            </span>
           </div>
-          <div className={`space-y-3 ${!store.apiEnabled.openrouter ? 'opacity-40 pointer-events-none' : ''}`}>
-            <div>
-              <div className="text-[10px] mb-1 font-medium" style={{ color: 'rgba(232,224,208,0.5)' }}>API Key</div>
-              <input type="password" value={orKey} onChange={e => setOrKey(e.target.value)}
-                className="w-full glass-input p-2.5 text-xs font-mono"
-                placeholder="sk-or-..." />
-            </div>
-            <div>
-              <div className="text-[10px] mb-1 font-medium" style={{ color: 'rgba(232,224,208,0.5)' }}>Model</div>
-              <select value={orModel} onChange={e => setOrModel(e.target.value)} className="w-full glass-select p-2.5 text-xs">
-                <option value="google/gemini-2.0-flash-exp:free">⭐ Gemini 2.0 Flash Exp (Free)</option>
-                <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
-                <option value="openai/gpt-4-turbo">GPT-4 Turbo</option>
-                <option value="meta-llama/llama-3.1-405b-instruct">Llama 3.1 405B</option>
-                <option value="deepseek/deepseek-chat">DeepSeek Chat</option>
-              </select>
-            </div>
-          </div>
+        )}
+
+        {/* Footer */}
+        <div className="p-6">
+          <p className="text-[10px] italic mb-4" style={{ color: 'rgba(212,175,55,0.3)' }}>
+            <i className="fa-solid fa-shield-halved" style={{ marginRight: '4px' }}></i>
+            Keys được lưu an toàn trong trình duyệt của bạn, không gửi đi đâu.
+          </p>
+          <button onClick={handleSave}
+            className={`w-full py-3.5 rounded-xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all ${validCount > 0 ? 'btn-gold' : ''}`}
+            style={validCount === 0 ? { background: 'rgba(255,255,255,0.05)', color: 'rgba(232,224,208,0.3)', border: '1px solid rgba(212,175,55,0.08)', cursor: 'not-allowed' } : {}}
+            disabled={validCount === 0}
+          >
+            <i className={`fa-solid ${validCount > 0 ? 'fa-check-circle' : 'fa-lock'}`}></i>
+            {validCount > 0 ? 'Lưu & Bắt Đầu' : 'Nhập API Key để tiếp tục'}
+          </button>
         </div>
-
-        {/* OpenAI */}
-        <div className="rounded-xl p-4 mb-4 transition-all" style={toggleBg(store.apiEnabled.openai)}>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-brain" style={{ color: '#B87333', fontSize: '14px' }}></i>
-              <div className="text-xs font-bold uppercase" style={{ color: '#B87333', fontFamily: "'Cinzel', serif", letterSpacing: '0.05em' }}>OpenAI (Alternative)</div>
-              <div
-                className="px-2 py-0.5 rounded-full text-[9px] font-bold"
-                style={{
-                  background: store.apiEnabled.openai ? 'rgba(184,115,51,0.2)' : 'rgba(255,255,255,0.05)',
-                  color: store.apiEnabled.openai ? '#B87333' : 'rgba(232,224,208,0.3)',
-                  border: `1px solid ${store.apiEnabled.openai ? 'rgba(184,115,51,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                }}
-              >
-                {store.apiEnabled.openai ? 'ON' : 'OFF'}
-              </div>
-            </div>
-            <label className="toggle-gold">
-              <input type="checkbox" checked={store.apiEnabled.openai} onChange={() => toggleApi('openai')} />
-              <span className="toggle-gold-slider"></span>
-            </label>
-          </div>
-          <div className={`space-y-3 ${!store.apiEnabled.openai ? 'opacity-40 pointer-events-none' : ''}`}>
-            <div>
-              <div className="text-[10px] mb-1 font-medium" style={{ color: 'rgba(232,224,208,0.5)' }}>API Key</div>
-              <input type="password" value={oaKey} onChange={e => setOaKey(e.target.value)}
-                className="w-full glass-input p-2.5 text-xs font-mono"
-                placeholder="sk-..." />
-            </div>
-            <div>
-              <div className="text-[10px] mb-1 font-medium" style={{ color: 'rgba(232,224,208,0.5)' }}>Model</div>
-              <select value={oaModel} onChange={e => setOaModel(e.target.value)} className="w-full glass-select p-2.5 text-xs">
-                <option value="gpt-4-turbo-preview">GPT-4 Turbo Preview</option>
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* YouTube */}
-        <div className="rounded-xl p-4 mb-4 transition-all" style={toggleBg(store.apiEnabled.youtube)}>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <i className="fa-brands fa-youtube" style={{ color: '#A8862A', fontSize: '14px' }}></i>
-              <div className="text-xs font-bold uppercase" style={{ color: '#A8862A', fontFamily: "'Cinzel', serif", letterSpacing: '0.05em' }}>YouTube Data API (Optional)</div>
-              <div
-                className="px-2 py-0.5 rounded-full text-[9px] font-bold"
-                style={{
-                  background: store.apiEnabled.youtube ? 'rgba(168,134,42,0.2)' : 'rgba(255,255,255,0.05)',
-                  color: store.apiEnabled.youtube ? '#A8862A' : 'rgba(232,224,208,0.3)',
-                  border: `1px solid ${store.apiEnabled.youtube ? 'rgba(168,134,42,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                }}
-              >
-                {store.apiEnabled.youtube ? 'ON' : 'OFF'}
-              </div>
-            </div>
-            <label className="toggle-gold">
-              <input type="checkbox" checked={store.apiEnabled.youtube} onChange={() => toggleApi('youtube')} />
-              <span className="toggle-gold-slider"></span>
-            </label>
-          </div>
-          <div className={!store.apiEnabled.youtube ? 'opacity-40 pointer-events-none' : ''}>
-            <input type="password" value={ytKey} onChange={e => setYtKey(e.target.value)}
-              className="w-full glass-input p-2.5 text-xs font-mono"
-              placeholder="AIza..." />
-            <div className="text-[9px] mt-1 italic" style={{ color: 'rgba(232,224,208,0.3)' }}>
-              Bật để hiển thị metadata chi tiết hơn cho Spy module
-            </div>
-          </div>
-        </div>
-
-        <p className="text-[10px] italic mb-4" style={{ color: 'rgba(212,175,55,0.3)' }}>
-          <i className="fa-solid fa-shield-halved mr-1"></i>
-          Keys được mã hóa và lưu trong local storage
-        </p>
-
-        <button onClick={saveKeys} className="w-full py-3 btn-gold flex items-center justify-center gap-2 text-base">
-          <i className="fa-solid fa-save"></i> Lưu Cấu Hình
-        </button>
       </div>
     </div>
   );

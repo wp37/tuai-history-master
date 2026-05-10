@@ -31,23 +31,12 @@ export interface StoreState {
   uiLanguage: 'vi' | 'en';
   renderingId: string | null;
   isLoading: boolean;
-  openRouterKey: string;
-  openRouterModel: string;
   youtubeApiKey: string;
-  openAiKey: string;
-  openAiModel: string;
-  apiEnabled: {
-    google: boolean;
-    openrouter: boolean;
-    openai: boolean;
-    youtube: boolean;
-  };
 }
 
 export const MODELS = {
   text: 'gemini-2.5-flash',
   image: 'imagen-3.0-generate-002',
-  openrouter_default: 'google/gemini-2.0-flash-exp:free'
 };
 
 export const SECONDS_PER_SCENE = 8;
