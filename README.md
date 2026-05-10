@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+# TUAI HISTORY MASTER
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**AI Multicultural Historical Storytelling Suite** — Một công cụ AI mạnh mẽ để phân tích, sáng tạo và tối ưu nội dung lịch sử đa văn hóa trên mọi nền tảng.
 
-Currently, two official plugins are available:
+## 5 Tính Năng Chính
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Tab | Mô Tả |
+|-----|--------|
+| **1. Phân Tích Lịch Sử Viral** | Phân tích chiến lược, revenue, audio, engagement của video lịch sử viral |
+| **2. Kịch Bản Lịch Sử** | Tạo kịch bản đa văn hóa với voice + visual prompts theo phong cách 14 visual styles |
+| **3. Studio Sáng Tạo** | Hiển thị và xuất video prompts + image prompts |
+| **4. Phân Phối Đa Nền Tảng** | SEO checklist, keywords, viral titles, thumbnail prompts |
+| **5. Chiến Lược Giáo Dục** | Phân tích thị trường, chân dung khách hàng, chiến lược kinh doanh |
 
-## React Compiler
+## API Integration
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Multi-provider với retry logic và round-robin:
+1. **Google Gemini** (Priority 1) — Gemini 2.0 Flash
+2. **OpenRouter** (Backup) — Claude, GPT-4, Llama, DeepSeek
+3. **OpenAI** (Alternative) — GPT-4 Turbo, GPT-3.5
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React 19, TypeScript, Vite 8
+- **Styling**: Tailwind CSS v4 với custom glassmorphism design system
+- **Icons**: Font Awesome 6
+- **Fonts**: Cinzel (headings) + Inter (body)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Design System
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Background**: Deep charcoal `#0A0E17`
+- **Primary**: Antique Gold `#D4AF37`
+- **Secondary**: Bronze `#CD7F32`
+- **Accent**: Copper `#B87333`
+- **Glassmorphism**: `backdrop-blur-20px`, `rgba(255,255,255,0.03)` bg, `rgba(212,175,55,0.15)` border
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Development
+
+```bash
+npm install
+npm run dev     # http://localhost:5173
+npm run build   # Production build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Đã thiết lập GitHub Actions → Vercel auto-deploy trên mỗi push to `main`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Để kích hoạt Vercel deployment:
+1. Tạo tài khoản Vercel tại https://vercel.com
+2. Import repo `wp37/tuai-history-master`
+3. Thêm Vercel credentials vào GitHub repo Settings → Secrets:
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+
+## Project Structure
+
+```
+src/
+├── App.tsx              # Main layout, sidebar, all tabs
+├── index.css            # Design system (glassmorphism, gold theme)
+├── components/
+│   ├── Header.tsx       # Gold/black header
+│   ├── ErrorToast.tsx  # Error notification
+│   ├── SettingsModal.tsx # API config modal
+│   └── tabs/
+│       ├── SpyTab.tsx    # Video analysis
+│       ├── StudioTab.tsx # Prompt display/export
+│       ├── SeoTab.tsx    # SEO + thumbnail
+│       └── MarketTab.tsx # Market analysis
+├── data/
+│   ├── types.ts         # StoreState, MODELS, SECONDS_PER_SCENE
+│   ├── countries.ts     # 40+ cultural contexts
+│   ├── prompts.ts       # System prompts, SEO checklist
+│   └── visualStyles.ts # 14 visual styles
+└── lib/
+    ├── api.ts           # Multi-API call with retry
+    └── utils.ts        # JSON parse, clipboard, YouTube fetch
 ```
