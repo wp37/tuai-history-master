@@ -2,19 +2,23 @@
 @import "tailwindcss";
 
 /* ============================================================
-   THEME TOKENS — Tailwind v4 @theme block
+   THEME TOKENS — Tailwind v4
    ============================================================ */
 @theme {
-  --color-bg-primary: #0A0E17;
+  --color-bg-primary: #0B0F1A;
   --color-bg-secondary: #0F1520;
+  --color-bg-card: rgba(15, 21, 32, 0.85);
   --color-gold-primary: #D4AF37;
   --color-gold-light: #F4D03F;
   --color-gold-dark: #A8862A;
   --color-bronze: #CD7F32;
   --color-copper: #B87333;
-  --color-glass-bg: rgba(255, 255, 255, 0.03);
-  --color-glass-border: rgba(212, 175, 55, 0.15);
-  --color-glass-hover: rgba(255, 255, 255, 0.06);
+  --color-text-primary: #E8E0D0;
+  --color-text-muted: rgba(232, 224, 208, 0.55);
+  --color-text-dim: rgba(232, 224, 208, 0.3);
+  --color-glass-bg: rgba(255, 255, 255, 0.04);
+  --color-glass-border: rgba(212, 175, 55, 0.12);
+  --color-glass-border-hover: rgba(212, 175, 55, 0.22);
   --font-family-display: 'Cinzel', serif;
   --font-family-sans: 'Inter', sans-serif;
 }
@@ -22,86 +26,78 @@
 /* ============================================================
    BASE RESET
    ============================================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: #0A0E17;
+  background-color: #0B0F1A;
   color: #E8E0D0;
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
-  position: relative;
 }
 
 body::before {
   content: '';
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(205, 127, 50, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(212,175,55,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 85% 8%, rgba(205,127,50,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 25% at 50% 100%, rgba(212,175,55,0.025) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
 
 /* ============================================================
-   SCROLLBAR — Gold gradient
+   SCROLLBAR
    ============================================================ */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(15, 21, 32, 0.5); border-radius: 10px; }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(15,21,32,0.5); border-radius: 10px; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #D4AF37, #CD7F32, #D4AF37);
+  background: linear-gradient(180deg, #D4AF37, #CD7F32);
   border-radius: 10px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(212,175,55,0.2);
 }
-::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #F4D03F, #D4AF37, #F4D03F); }
-::-webkit-scrollbar-corner { background: rgba(15, 21, 32, 0.5); }
-* { scrollbar-width: thin; scrollbar-color: #D4AF37 rgba(15, 21, 32, 0.5); }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #F4D03F, #D4AF37); }
+* { scrollbar-width: thin; scrollbar-color: #D4AF37 rgba(15,21,32,0.5); }
 
 /* ============================================================
-   GLASS CARD BASE CLASS
+   GLASS CARD
    ============================================================ */
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(15, 21, 32, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  border-radius: 16px;
+  border: 1px solid rgba(212,175,55,0.12);
+  border-radius: 20px;
   transition: all 0.3s ease;
 }
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(212, 175, 55, 0.22);
+  background: rgba(20,27,40,0.88);
+  border-color: rgba(212,175,55,0.18);
+  box-shadow: 0 8px 40px rgba(212,175,55,0.05);
 }
 
 /* ============================================================
-   GLASS INPUT FIELDS
+   GLASS INPUT
    ============================================================ */
 .glass-input {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255,255,255,0.04);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 175, 55, 0.12);
-  border-radius: 12px;
+  border: 1px solid rgba(212,175,55,0.12);
+  border-radius: 14px;
   color: #E8E0D0;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
   outline: none;
 }
-.glass-input::placeholder { color: rgba(232, 224, 208, 0.3); }
+.glass-input::placeholder { color: rgba(232,224,208,0.25); }
 .glass-input:focus {
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08), 0 0 20px rgba(212, 175, 55, 0.1);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(212,175,55,0.35);
+  box-shadow: 0 0 0 3px rgba(212,175,55,0.07), 0 0 25px rgba(212,175,55,0.08);
+  background: rgba(255,255,255,0.06);
 }
 
 /* ============================================================
@@ -109,34 +105,31 @@ body::before {
    ============================================================ */
 .glass-select {
   appearance: none;
-  background: rgba(255, 255, 255, 0.03) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4AF37' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+  background: rgba(255,255,255,0.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4AF37' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 14px center;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 175, 55, 0.12);
-  border-radius: 12px;
+  border: 1px solid rgba(212,175,55,0.12);
+  border-radius: 14px;
   color: #E8E0D0;
-  padding-right: 36px;
+  padding-right: 40px;
   cursor: pointer;
   transition: all 0.3s ease;
   outline: none;
 }
-.glass-select:focus {
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
-}
+.glass-select:focus { border-color: rgba(212,175,55,0.35); box-shadow: 0 0 0 3px rgba(212,175,55,0.07); }
 .glass-select option { background: #0F1520; color: #E8E0D0; }
 
 /* ============================================================
-   PRIMARY CTA BUTTON — Gold gradient
+   BUTTONS
    ============================================================ */
 .btn-gold {
   background: linear-gradient(135deg, #D4AF37 0%, #CD7F32 50%, #B87333 100%);
-  color: #0A0E17;
-  font-weight: 700;
+  color: #0B0F1A;
+  font-weight: 800;
   font-family: 'Cinzel', serif;
-  letter-spacing: 0.08em;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -145,172 +138,103 @@ body::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 .btn-gold:hover {
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), 0 0 50px rgba(212, 175, 55, 0.2);
-  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(212,175,55,0.45), 0 0 60px rgba(212,175,55,0.15);
+  transform: translateY(-2px);
+  filter: brightness(1.08);
 }
 .btn-gold:hover::before { opacity: 1; }
-.btn-gold:active { transform: translateY(0); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+.btn-gold:active { transform: translateY(0); filter: brightness(0.97); }
 
-/* Secondary outline gold button */
 .btn-gold-outline {
   background: transparent;
   color: #D4AF37;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  border-radius: 12px;
-  font-weight: 600;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 14px;
+  font-weight: 700;
   font-family: 'Cinzel', serif;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   transition: all 0.3s ease;
 }
 .btn-gold-outline:hover {
-  background: rgba(212, 175, 55, 0.1);
-  border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  background: rgba(212,175,55,0.1);
+  border-color: rgba(212,175,55,0.5);
+  box-shadow: 0 0 20px rgba(212,175,55,0.1);
   color: #F4D03F;
-}
-
-/* ============================================================
-   EMPTY STATE
-   ============================================================ */
-.empty-state {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(212, 175, 55, 0.15);
-  border-radius: 16px;
-  color: rgba(232, 224, 208, 0.4);
-  transition: all 0.3s ease;
-}
-.empty-state:hover {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(212, 175, 55, 0.25);
-}
-
-/* ============================================================
-   TOOLTIP
-   ============================================================ */
-.tooltip-container { position: relative; }
-.tooltip-text {
-  position: absolute;
-  left: calc(100% + 12px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(15, 21, 32, 0.95);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  color: #E8E0D0;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-family: 'Inter', sans-serif;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 100;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-.tooltip-container:hover .tooltip-text { opacity: 1; }
-
-/* ============================================================
-   BADGE / CHIP
-   ============================================================ */
-.badge-gold {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: rgba(212, 175, 55, 0.12);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: #D4AF37;
 }
 
 /* ============================================================
    CONTENT AREA
    ============================================================ */
 .content-area {
-  background: rgba(10, 14, 23, 0.7);
+  background: rgba(11,15,26,0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(212, 175, 55, 0.08);
-  border-radius: 20px;
-  box-shadow: inset 0 0 80px -20px rgba(212, 175, 55, 0.04);
-}
-
-/* ============================================================
-   PARCHMENT TEXTURE OVERLAY
-   ============================================================ */
-.parchment-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-}
-
-/* ============================================================
-   TOGGLE SWITCH — Gold theme
-   ============================================================ */
-.toggle-gold {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
-.toggle-gold input { opacity: 0; width: 0; height: 0; }
-.toggle-gold-slider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(212,175,55,0.07);
   border-radius: 24px;
-  transition: 0.3s;
+  box-shadow: inset 0 0 100px -30px rgba(212,175,55,0.03);
 }
-.toggle-gold-slider::before {
+
+/* ============================================================
+   SIDEBAR NAV ITEM
+   ============================================================ */
+.nav-item {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.nav-item::before {
   content: '';
   position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background: #A8862A;
-  border-radius: 50%;
-  transition: 0.3s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
-.toggle-gold input:checked + .toggle-gold-slider {
-  background: linear-gradient(135deg, #D4AF37, #CD7F32);
-  border-color: rgba(212, 175, 55, 0.5);
+.nav-item:hover::before { opacity: 1; }
+.nav-item:hover {
+  background: rgba(212,175,55,0.04);
+  border-color: rgba(212,175,55,0.1);
 }
-.toggle-gold input:checked + .toggle-gold-slider::before {
-  transform: translateX(20px);
-  background: #0A0E17;
+.nav-item.active {
+  background: rgba(212,175,55,0.08);
+  border-color: rgba(212,175,55,0.2);
+  box-shadow: 0 0 25px rgba(212,175,55,0.07);
+}
+.nav-item.active::before { opacity: 1; }
+
+/* ============================================================
+   SECTION LABEL
+   ============================================================ */
+.section-label {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #A8862A;
 }
 
 /* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideInRight { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes slideInBottom { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes slideInLeft { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideInBottom { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-@keyframes goldPulse { 0%, 100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); } 50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); } }
+@keyframes goldPulse { 0%,100% { box-shadow: 0 0 15px rgba(212,175,55,0.2); } 50% { box-shadow: 0 0 30px rgba(212,175,55,0.4); } }
+@keyframes borderGlow { 0%,100% { border-color: rgba(212,175,55,0.15); } 50% { border-color: rgba(212,175,55,0.25); } }
 
 .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-.animate-slide-in-right { animation: slideInRight 0.5s ease-out; }
 .animate-slide-in-bottom { animation: slideInBottom 0.5s ease-out; }
-.animate-slide-in-left { animation: slideInLeft 0.5s ease-out; }
+.animate-slide-in-right { animation: slideInRight 0.5s ease-out; }
 .animate-shimmer {
   background: linear-gradient(90deg, #D4AF37 0%, #F4D03F 25%, #D4AF37 50%, #CD7F32 75%, #D4AF37 100%);
   background-size: 200% auto;
@@ -319,11 +243,131 @@ body::before {
   -webkit-text-fill-color: transparent;
   animation: shimmer 3s linear infinite;
 }
+.animate-border-glow { animation: borderGlow 3s ease-in-out infinite; }
 
 /* ============================================================
-   DISPLAY FONT CLASS
+   TOGGLE SWITCH
+   ============================================================ */
+.toggle-gold {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+.toggle-gold input { opacity: 0; width: 0; height: 0; }
+.toggle-gold-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 26px;
+  transition: 0.3s;
+}
+.toggle-gold-slider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background: #A8862A;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.toggle-gold input:checked + .toggle-gold-slider {
+  background: linear-gradient(135deg, #D4AF37, #CD7F32);
+  border-color: rgba(212,175,55,0.5);
+}
+.toggle-gold input:checked + .toggle-gold-slider::before {
+  transform: translateX(22px);
+  background: #0B0F1A;
+}
+
+/* ============================================================
+   DISPLAY FONT
    ============================================================ */
 .font-display {
   font-family: 'Cinzel', serif;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   BADGE / CHIP
+   ============================================================ */
+.badge-gold {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.25);
+  color: #D4AF37;
+}
+
+/* ============================================================
+   STAT CARD
+   ============================================================ */
+.stat-card {
+  background: rgba(212,175,55,0.04);
+  border: 1px solid rgba(212,175,55,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+.stat-card:hover {
+  background: rgba(212,175,55,0.07);
+  border-color: rgba(212,175,55,0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212,175,55,0.06);
+}
+
+/* ============================================================
+   RESULT GRID (3 columns)
+   ============================================================ */
+.result-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.result-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.15), transparent);
+  margin: 24px 0;
+}
+
+/* ============================================================
+   CHAT BUBBLE
+   ============================================================ */
+.chat-bubble {
+  background: rgba(212,175,55,0.05);
+  border: 1px solid rgba(212,175,55,0.1);
+  border-radius: 16px;
+  padding: 16px 20px;
+  position: relative;
+}
+.chat-bubble::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: -1px;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #D4AF37, #CD7F32);
+  border-radius: 3px;
 }
