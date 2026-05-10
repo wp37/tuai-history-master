@@ -17,11 +17,12 @@ export default function StudioTab({ store, onModeChange, onCopy, showExportMenu,
   const empty = segments.length === 0;
 
   return (
-    <div className="h-full flex flex-col animate-slide-in-right relative z-10">
-      <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-        <h2 className="text-xl font-bold flex items-center gap-2" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
-          <i className="fa-solid fa-clapperboard" style={{ color: '#D4AF37' }}></i> Studio Sáng Tạo Đa Phương Tiện
-        </h2>
+    <div className="p-8 animate-slide-in-right relative z-10">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
+          <h2 className="text-[28px] font-bold flex items-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0', lineHeight: 1.2 }}>
+            <i className="fa-solid fa-clapperboard" style={{ color: '#D4AF37' }}></i> Studio Sáng Tạo
+          </h2>
         <div className="flex rounded-xl p-1 gap-1" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.08)' }}>
           <button
             onClick={() => onModeChange('video')}
@@ -45,7 +46,7 @@ export default function StudioTab({ store, onModeChange, onCopy, showExportMenu,
               boxShadow: store.productionMode === 'image' ? '0 0 10px rgba(212,175,55,0.1)' : 'none',
             }}
           >
-            <i className="fa-solid fa-image"></i> ẢNH
+            <i className="fa-solid fa-photo-film"></i> ẢNH
           </button>
           <div className="relative ml-2" ref={exportRef}>
             <button
@@ -100,51 +101,68 @@ export default function StudioTab({ store, onModeChange, onCopy, showExportMenu,
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-4 pb-10">
+      <div className="space-y-4">
         {empty ? (
-          <div className="empty-state flex flex-col items-center justify-center py-20">
-            <i className="fa-solid fa-layer-group mb-3 text-2xl" style={{ color: 'rgba(212,175,55,0.3)' }}></i>
-            <p className="text-sm" style={{ fontFamily: "'Cinzel', serif" }}>Hãy tạo kịch bản ở bước 2 để có dữ liệu Prompt</p>
+          <div className="glass-card flex flex-col items-center justify-center py-20 text-center">
+            <i className="fa-solid fa-layer-group mb-4 text-3xl" style={{ color: 'rgba(212,175,55,0.3)' }}></i>
+            <p className="text-base" style={{ fontFamily: "'Cinzel', serif", color: 'rgba(232,224,208,0.4)' }}>
+              Hãy tạo kịch bản ở tab SCRIPT để hiển thị Prompts
+            </p>
+            <p className="text-xs mt-2" style={{ color: 'rgba(212,175,55,0.3)' }}>Video Prompts + Image Prompts sẽ hiển thị ở đây</p>
           </div>
         ) : (
           segments.map((seg, idx) => {
             const prompt = store.productionMode === 'video' ? seg.video_prompt : seg.image_prompt;
+            const modeColor = store.productionMode === 'video' ? '#D4AF37' : '#CD7F32';
             return (
-              <div key={idx} className="glass-card p-4 flex flex-col sm:flex-row gap-4 items-start transition-colors hover:border-[rgba(212,175,55,0.22)]">
-                <div
-                  className="px-3 py-1.5 rounded text-xs font-bold h-fit"
-                  style={{
-                    background: 'rgba(212,175,55,0.1)',
-                    border: '1px solid rgba(212,175,55,0.25)',
-                    color: '#D4AF37',
-                    fontFamily: "'Cinzel', serif",
-                    boxShadow: '0 0 10px rgba(212,175,55,0.1)',
-                  }}
-                >
-                  CẢNH {idx + 1}
-                </div>
-                <div className="flex-1 w-full">
-                  <div className="flex justify-between items-center mb-1">
-                    <div className="text-[10px] font-bold uppercase flex items-center gap-1" style={{ color: 'rgba(232,224,208,0.4)', fontFamily: "'Cinzel', serif" }}>
-                      {store.productionMode === 'video'
-                        ? <><i className="fa-solid fa-film" style={{ color: '#D4AF37' }}></i> VIDEO PROMPT</>
-                        : <><i className="fa-solid fa-image" style={{ color: '#CD7F32' }}></i> ẢNH PROMPT</>}
+              <div key={idx} className="glass-card p-6 transition-all hover:border-[rgba(212,175,55,0.22)]">
+                <div className="flex items-start gap-5">
+                  <div className="shrink-0">
+                    <div className="px-4 py-3 rounded-xl text-center" style={{
+                      background: `${modeColor}15`,
+                      border: `1px solid ${modeColor}30`,
+                      color: modeColor,
+                      fontFamily: "'Cinzel', serif",
+                      fontSize: '13px',
+                      fontWeight: 800,
+                      boxShadow: `0 0 15px ${modeColor}20`,
+                    }}>
+                      CẢNH {idx + 1}
                     </div>
+                    {seg.time && (
+                      <div className="text-center mt-2" style={{ fontSize: '10px', color: 'rgba(232,224,208,0.3)', fontFamily: 'monospace' }}>{seg.time}</div>
+                    )}
                   </div>
-                  <div className="relative group/prompt">
-                    <p
-                      className="text-xs font-mono mb-3 p-3 rounded-xl leading-relaxed pr-10"
-                      style={{ background: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.08)', color: 'rgba(232,224,208,0.8)' }}
-                    >{prompt || 'No prompt'}</p>
-                    <button
-                      onClick={() => onCopy(prompt || '')}
-                      className="absolute top-2 right-2 p-1.5 rounded transition-all"
-                      style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.15)', color: 'rgba(232,224,208,0.5)' }}
-                      onMouseOver={e => (e.currentTarget.style.color = '#D4AF37')}
-                      onMouseOut={e => (e.currentTarget.style.color = 'rgba(232,224,208,0.5)')}
-                    >
-                      <i className="fa-solid fa-copy"></i>
-                    </button>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="section-label flex items-center gap-2">
+                        <i className={`fa-solid ${store.productionMode === 'video' ? 'fa-video' : 'fa-photo-film'}`} style={{ color: modeColor }}></i>
+                        {store.productionMode === 'video' ? 'VIDEO PROMPT' : 'IMAGE PROMPT'}
+                      </div>
+                      <div className="px-3 py-1 rounded-full text-[9px] font-bold" style={{ background: `${modeColor}15`, color: modeColor, border: `1px solid ${modeColor}30` }}>
+                        {store.productionMode === 'video' ? 'VIDEO' : 'IMAGE'}
+                      </div>
+                    </div>
+                    <div className="relative group/prompt">
+                      <p className="text-sm font-mono leading-relaxed pr-12 p-4 rounded-xl"
+                        style={{ background: `${modeColor}06`, border: `1px solid ${modeColor}15`, color: 'rgba(232,224,208,0.85)' }}>
+                        {prompt || 'No prompt'}
+                      </p>
+                      <button
+                        onClick={() => onCopy(prompt || '')}
+                        className="absolute top-3 right-3 p-2 rounded-xl transition-all"
+                        style={{ background: `${modeColor}15`, border: `1px solid ${modeColor}30`, color: modeColor }}
+                        onMouseOver={e => { e.currentTarget.style.background = modeColor; e.currentTarget.style.color = '#0B0F1A'; }}
+                        onMouseOut={e => { e.currentTarget.style.background = `${modeColor}15`; e.currentTarget.style.color = modeColor; }}
+                      >
+                        <i className="fa-solid fa-copy text-sm"></i>
+                      </button>
+                    </div>
+                    {seg.character && (
+                      <div className="mt-2 text-[11px]" style={{ color: 'rgba(232,224,208,0.3)' }}>
+                        <i className="fa-solid fa-user" style={{ marginRight: '4px' }}></i>NV: {seg.character}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -152,6 +170,7 @@ export default function StudioTab({ store, onModeChange, onCopy, showExportMenu,
           })
         )}
       </div>
+    </div>
     </div>
   );
 }

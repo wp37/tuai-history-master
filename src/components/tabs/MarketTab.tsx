@@ -30,36 +30,41 @@ export default function MarketTab({ marketTopic, setMarketTopic, results, loadin
   const calculator = data?.profit_calculator || [];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-slide-in-right relative z-10">
-      <div className="glass-card p-6">
-        <h2 className="text-xl font-bold mb-5 flex items-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
-          <i className="fa-solid fa-chart-line" style={{ color: '#D4AF37' }}></i> Mô Hình Kinh Doanh & Kiếm Tiền Thụ Động
-        </h2>
-        <div className="flex gap-3 mb-6">
+    <div className="p-8 animate-slide-in-right relative z-10">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-[32px] font-bold mb-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0', lineHeight: 1.2 }}>
+            Chiến Lược <span className="animate-shimmer">Kinh Doanh</span> Triệu Đô
+          </h2>
+          <p className="text-base" style={{ color: 'rgba(232,224,208,0.45)' }}>
+            Mô hình kiếm tiền thụ động, phân tích thị trường và chân dung khách hàng
+          </p>
+        </div>
+
+        <div className="mb-6 flex gap-3 items-center">
           <input
             value={marketTopic}
             onChange={e => setMarketTopic(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && onAnalyze()}
             placeholder="Nhập lĩnh vực (VD: Khóa học AI, Sản phẩm vật lý, Coaching)..."
-            className="flex-1 glass-input p-3 text-sm"
+            className="flex-1 glass-input px-6 text-[15px]"
+            style={{ height: '56px' }}
           />
-          <button
-            onClick={onAnalyze}
-            disabled={loading}
-            className="px-6 py-3 btn-gold flex items-center gap-2 text-sm"
-          >
-            {loading ? <><i className="fa-solid fa-sync fa-spin"></i> ĐANG...</> : <><i className="fa-solid fa-bullseye"></i> PHÁT TRIỂN THỊ TRƯỜNG</>}
+          <button onClick={onAnalyze} disabled={loading}
+            className="btn-gold px-6 shrink-0 flex items-center gap-2 text-sm"
+            style={{ height: '56px' }}>
+            {loading ? <><i className="fa-solid fa-sync fa-spin" /> ĐANG...</> : <><i className="fa-solid fa-bullseye" /> PHÂN TÍCH</>}
           </button>
         </div>
 
         {!data ? (
-          <div className="empty-state flex flex-col items-center justify-center py-20">
-            <i className="fa-solid fa-money-bill-trend-up mb-2" style={{ color: 'rgba(212,175,55,0.3)' }}></i>
-            <p className="text-sm" style={{ fontFamily: "'Cinzel', serif" }}>Nhập chủ đề để AI xây dựng chiến lược kinh doanh triệu đô</p>
+          <div className="glass-card flex flex-col items-center justify-center py-20 text-center">
+            <i className="fa-solid fa-money-bill-trend-up mb-4 text-3xl" style={{ color: 'rgba(212,175,55,0.3)' }}></i>
+            <p className="text-base" style={{ fontFamily: "'Cinzel', serif", color: 'rgba(232,224,208,0.4)' }}>Nhập chủ đề để AI xây dựng chiến lược kinh doanh</p>
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="result-grid-2">
               {persona && (
                 <div className="glass-card p-5">
                   <h3 className="text-sm font-bold mb-4 flex items-center gap-2 uppercase tracking-wide" style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif" }}>

@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(gh repo *)"
+      "Bash(gh repo *)",
+      "Bash(vercel projects *)",
+      "Read(//c/Users/Vo Tung/**)",
+      "Read(//c/Users/Vo Tung/.vercel/**)"
     ]
   }
 }

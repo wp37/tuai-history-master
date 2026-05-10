@@ -50,29 +50,34 @@ export default function SeoTab({ seoTopic, setSeoTopic, results, loading, onGene
   const thumbnail = data?.thumbnail_strategy;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-slide-in-right relative z-10">
-      <div className="glass-card p-6">
-        <h2 className="text-xl font-bold mb-5 flex items-center gap-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0' }}>
-          <i className="fa-solid fa-magnifying-glass-arrow-right" style={{ color: '#D4AF37' }}></i> Tối Ưu Tăng Trưởng & SEO Đa Nền Tảng
-        </h2>
-        <div className="flex gap-3 mb-6">
+    <div className="p-8 animate-slide-in-right relative z-10">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-[32px] font-bold mb-3" style={{ fontFamily: "'Cinzel', serif", color: '#E8E0D0', lineHeight: 1.2 }}>
+            Tối Ưu <span className="animate-shimmer">SEO & Growth</span> Đa Nền Tảng
+          </h2>
+          <p className="text-base" style={{ color: 'rgba(232,224,208,0.45)' }}>
+            Từ khóa viral, hashtag, mô tả và thumbnail strategy
+          </p>
+        </div>
+
+        <div className="mb-6 flex gap-3 items-center">
           <input
             value={seoTopic}
             onChange={e => setSeoTopic(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && onGenerate()}
             placeholder="Nhập chủ đề để tối ưu từ khóa viral..."
-            className="flex-1 glass-input p-3 text-sm"
+            className="flex-1 glass-input px-6 text-[15px]"
+            style={{ height: '56px' }}
           />
-          <button
-            onClick={onGenerate}
-            disabled={loading}
-            className="px-6 py-3 btn-gold flex items-center gap-2 text-sm"
-          >
-            {loading ? <><i className="fa-solid fa-sync fa-spin"></i> ĐANG...</> : <><i className="fa-solid fa-rocket"></i> GROWTH HACKING</>}
+          <button onClick={onGenerate} disabled={loading}
+            className="btn-gold px-6 shrink-0 flex items-center gap-2 text-sm"
+            style={{ height: '56px' }}>
+            {loading ? <><i className="fa-solid fa-sync fa-spin" /> ĐANG...</> : <><i className="fa-solid fa-rocket" /> TỐI ƯU NGAY</>}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="result-grid-2">
           {/* Checklist */}
           <div className="glass-card p-4" style={{ background: 'rgba(212,175,55,0.02)' }}>
             <h3 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif" }}>

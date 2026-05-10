@@ -103,6 +103,13 @@ export default function App() {
 
   const keyCount = store.keyPool.filter(k => k && k.trim() !== '').length;
 
+  // Auto-open Settings khi chưa có API key
+  useEffect(() => {
+    if (keyCount === 0) {
+      setShowSettings(true);
+    }
+  }, []);
+
   const showError = useCallback((msg: string) => {
     setError(msg);
     setTimeout(() => setError(null), 5000);
@@ -244,7 +251,7 @@ export default function App() {
   };
   const exportPromptsCSV = (type: 'video' | 'image') => {
     if (store.scriptSegments.length === 0) return;
-    let csv = "﻿Scene,${type === 'video' ? 'Video' : 'Image'} Prompt\n";
+    let csv = `﻿Scene,${type === 'video' ? 'Video' : 'Image'} Prompt\n`;
     store.scriptSegments.forEach((s, i) => {
       const prompt = (type === 'video' ? s.video_prompt : s.image_prompt || "").replace(/"/g, '""');
       csv += `${i + 1},"${prompt}"\n`;
